@@ -28,6 +28,19 @@ const CONCURRENCY = 4;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * GDDL stores a showcase video per level, either as a bare YouTube id or as a
+ * full youtube.com/youtu.be URL. Reduce both to the 11-character video id so the
+ * app can build a thumbnail URL (img.youtube.com/vi/<id>/mqdefault.jpg).
+ */
+function youtubeId(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  if (/^[\w-]{11}$/.test(raw)) return raw;
+  const match = raw.match(/(?:v=|youtu\.be\/|\/embed\/|\/shorts\/|\/v\/)([\w-]{11})/);
+  return match ? match[1] : null;
+}
+
 async function mapPool(items, worker, concurrency = CONCURRENCY) {
   const out = new Array(items.length);
   let next = 0;
@@ -146,6 +159,8 @@ async function main() {
       difficulty: row.difficulty,
       // GDDL tier: community difficulty score (higher = harder).
       tier: Math.round((row.rating ?? 0) * 100) / 100,
+      // YouTube showcase video id, used for the card thumbnail.
+      yt: youtubeId(row.showcase),
       // AREDL leaderboard position + points, only for listed Extreme Demons.
       aredl: entry?.position ?? null,
       points: entry?.points ?? null,

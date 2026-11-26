@@ -7,6 +7,8 @@ export type Level = {
   difficulty: Difficulty;
   /** GDDL tier rating (community difficulty score, higher = harder). */
   tier: number;
+  /** YouTube showcase video id (11 chars), used for the card thumbnail. */
+  yt: string | null;
   /** AREDL leaderboard position, only for listed Extreme Demons. */
   aredl: number | null;
   /** AREDL points for the position. */

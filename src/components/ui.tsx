@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { DIFFICULTY_COLOR, DIFFICULTY_SHORT } from "../lib/levels";
 import { rarityMeta, rarityStyle } from "../lib/rarity";
 import type { Difficulty, Level } from "../lib/types";
@@ -40,6 +40,44 @@ export function RarityTag({ rarity }: { rarity: number }) {
   );
 }
 
+const youtubeThumb = (id: string) => `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+const communityThumb = (id: number) => `https://levelthumbs.prevter.me/thumbnail/${id}`;
+
+/**
+ * Card artwork. Most levels have a GDDL showcase video, so the YouTube still is
+ * the best-looking source; levels without one fall back to the community
+ * thumbnail database, and anything still missing shows the demon face.
+ */
+function CardArt({ level, holo }: { level: Level; holo: boolean }) {
+  const sources = useMemo(() => {
+    const list: string[] = [];
+    if (level.yt) list.push(youtubeThumb(level.yt));
+    list.push(communityThumb(level.id));
+    return list;
+  }, [level.id, level.yt]);
+
+  const [attempt, setAttempt] = useState(0);
+  const src = sources[attempt];
+
+  return (
+    <span className="card__art">
+      {src ? (
+        <img
+          className="card__thumb"
+          src={src}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() => setAttempt((value) => value + 1)}
+        />
+      ) : (
+        <DemonFace className="card__face" />
+      )}
+      {holo && <span className="card__holo">HOLO</span>}
+    </span>
+  );
+}
+
 type CardTileProps = {
   level: Level;
   rarity: number;
@@ -72,10 +110,7 @@ export function CardTile({
         <DifficultyBadge difficulty={level.difficulty} />
         <span className="card__rarity">{rarityMeta(rarity).name}</span>
       </span>
-      <span className="card__art">
-        <DemonFace className="card__face" />
-        {holo && <span className="card__holo">HOLO</span>}
-      </span>
+      <CardArt level={level} holo={holo} />
       <span className="card__body">
         <span className="card__name">{level.name}</span>
         <span className="card__author">by {level.author}</span>
