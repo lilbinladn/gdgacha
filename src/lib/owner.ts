@@ -13,7 +13,7 @@ const CONFIGURED = String(import.meta.env.VITE_OWNER_DISCORD ?? "")
   .map((value) => value.trim().toLowerCase())
   .filter(Boolean);
 
-const DEFAULT_OWNERS = ["lilbinladn"];
+const DEFAULT_OWNERS = ["micahisthebigm"];
 
 const OWNERS = new Set([...DEFAULT_OWNERS, ...CONFIGURED]);
 
