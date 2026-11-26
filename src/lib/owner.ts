@@ -17,7 +17,10 @@ const DEFAULT_OWNERS = ["micahisthebigm"];
 
 const OWNERS = new Set([...DEFAULT_OWNERS, ...CONFIGURED]);
 
-export function matchesOwner(user: Pick<DiscordUser, "id" | "username"> | null): boolean {
+export function matchesOwner(
+  user: Pick<DiscordUser, "id" | "username" | "global_name"> | null,
+): boolean {
   if (!user) return false;
-  return OWNERS.has(user.id.toLowerCase()) || OWNERS.has(user.username.toLowerCase());
+  const names = [user.id, user.username, user.global_name ?? ""];
+  return names.some((name) => name && OWNERS.has(name.toLowerCase()));
 }
