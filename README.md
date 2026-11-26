@@ -88,7 +88,7 @@ VITE_OWNER_DISCORD=your_discord_username npm run dev
 ```
 
 On GitHub Pages, set it as a repository variable named `OWNER_DISCORD` (Settings → Secrets and
-variables → Actions → Variables). The built-in default is `lilbinladn`.
+variables → Actions → Variables). The built-in default is `micahisthebigm`.
 
 This is a convenience, not a security boundary: saves live in `localStorage`, so anyone can edit
 their own numbers regardless of what the client allows.
