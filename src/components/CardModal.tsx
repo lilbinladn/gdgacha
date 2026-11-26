@@ -70,7 +70,7 @@ export function CardModal({ levelId, onClose }: Props) {
             {owned ? (
               <>
                 <strong>Owned ×{owned.count}</strong>
-                {owned.holo && <span className="chip chip--holo">Holo</span>}
+                {owned.holo && <span className="chip chip--holo">Foil</span>}
               </>
             ) : (
               <span className="muted">Not collected yet — keep opening packs.</span>

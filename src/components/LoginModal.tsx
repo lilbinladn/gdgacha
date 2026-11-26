@@ -52,7 +52,7 @@ export function LoginModal({ open, onClose, onSignedOut }: Props) {
         {session ? (
           <>
             <p className="modal__text">
-              Signed in as <strong>{playerName}</strong>. Your packs, cards and holo pulls are
+              Signed in as <strong>{playerName}</strong>. Your packs, cards and foil pulls are
               saved to this Discord account on this device.
             </p>
             <dl className="kv">
@@ -77,7 +77,7 @@ export function LoginModal({ open, onClose, onSignedOut }: Props) {
         ) : (
           <>
             <p className="modal__text">
-              Sign in with Discord to save your collection, pack timer and holo cards under your
+              Sign in with Discord to save your collection, pack timer and foil cards under your
               account.
             </p>
             <button

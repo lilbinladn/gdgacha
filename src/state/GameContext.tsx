@@ -18,6 +18,7 @@ import {
   type Session,
 } from "../lib/auth";
 import { rollPack } from "../lib/gacha";
+import { matchesOwner } from "../lib/owner";
 import { accrue, emptySave, getGuestId, loadSave, MAX_PACKS, PACK_INTERVAL_MS, persistSave } from "../lib/storage";
 import type { Pull, SaveData } from "../lib/types";
 
@@ -38,7 +39,9 @@ type GameValue = {
   ownedCount: number;
   holoCount: number;
   totalCards: number;
+  isOwner: boolean;
   openPacks: (count: number) => Pull[];
+  grantPacks: (count: number) => void;
   signOut: () => void;
   resetProgress: () => void;
 };
@@ -145,6 +148,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [save],
   );
 
+  const owner = useMemo(() => matchesOwner(session?.user ?? null), [session]);
+
+  // Owner-only: top up packs on demand, ignoring the earn timer and the cap.
+  const grantPacks = useCallback((count: number) => {
+    setSave((prev) => {
+      if (!prev || count <= 0) return prev;
+      return {
+        ...prev,
+        packs: prev.packs + count,
+        // Overflowing the normal cap restarts the earn timer, as opening does.
+        lastPackAt: prev.packs >= MAX_PACKS ? Date.now() : prev.lastPackAt,
+      };
+    });
+  }, []);
+
   const signOut = useCallback(() => {
     clearSession();
     setSession(null);
@@ -157,6 +175,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const value = useMemo<GameValue>(() => {
     const safeSave = save ?? EMPTY_SAVE;
     const ownedKeys = Object.keys(safeSave.owned);
+    // The owner has no storage cap.
+    const cap = owner ? Number.POSITIVE_INFINITY : MAX_PACKS;
     return {
       booting,
       authError,
@@ -167,17 +187,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save: safeSave,
       now,
       packs: safeSave.packs,
-      isFull: safeSave.packs >= MAX_PACKS,
+      isFull: safeSave.packs >= cap,
       nextPackAt:
-        safeSave.packs >= MAX_PACKS ? 0 : safeSave.lastPackAt + PACK_INTERVAL_MS,
+        safeSave.packs >= cap ? 0 : safeSave.lastPackAt + PACK_INTERVAL_MS,
       ownedCount: ownedKeys.length,
       holoCount: ownedKeys.filter((key) => safeSave.owned[key]?.holo).length,
       totalCards: ownedKeys.reduce((sum, key) => sum + (safeSave.owned[key]?.count ?? 0), 0),
+      isOwner: owner,
       openPacks,
+      grantPacks,
       signOut,
       resetProgress,
     };
-  }, [authError, booting, now, openPacks, resetProgress, save, session, signOut]);
+  }, [authError, booting, grantPacks, now, openPacks, owner, resetProgress, save, session, signOut]);
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }

@@ -73,7 +73,7 @@ function CardArt({ level, holo }: { level: Level; holo: boolean }) {
       ) : (
         <DemonFace className="card__face" />
       )}
-      {holo && <span className="card__holo">HOLO</span>}
+      {holo && <span className="card__holo">FOIL</span>}
     </span>
   );
 }

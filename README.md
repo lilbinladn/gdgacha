@@ -16,11 +16,14 @@ Built as a static site, so it deploys to GitHub Pages with no backend.
 - **Rarities** — Common, Uncommon, Rare, Epic, Legendary, Mythic and Celestial. Rarity is derived
   from the level itself: difficulty sets the base, the hardest few percent of each difficulty get
   bumped, AREDL top 300 becomes Mythic and AREDL top 50 becomes Celestial.
-- **Holo cards** — 8% of pulls are holo variants with a shimmer treatment.
+- **Foil cards** — 8% of pulls are foil variants with a shimmer treatment.
 - **Discord login** — OAuth2 authorization-code flow with PKCE, entirely in the browser (no
   client secret, no server).
 - **Collection & Index** — filter your collection, or browse all 11,000+ demons with search,
-  difficulty, rarity and "owned only" filters.
+  difficulty, rarity and "owned only" filters. The index is ordered by AREDL difficulty, hardest
+  first.
+- **Owner powers** — the site owner's Discord account can add packs at any time, ignoring the timer
+  and the storage cap (see [Owner powers](#owner-powers)).
 
 ## Data sources
 
@@ -30,6 +33,11 @@ Built as a static site, so it deploys to GitHub Pages with no backend.
 | --- | --- |
 | [GDDL](https://gdladder.com) (`gdladder.com/api/levels`) | Every rated demon in the game, its difficulty and tier rating |
 | [AREDL](https://aredl.net) (`api.aredl.net/v2/api/aredl/levels`) | All Rated Extreme Demons List positions and points |
+
+Card thumbnails are the still of each level's GDDL showcase video
+(`img.youtube.com/vi/<id>/mqdefault.jpg`), falling back to the community thumbnail database at
+`levelthumbs.prevter.me` and then to a demon icon. Nothing is downloaded — the images are hotlinked,
+so the dataset stays small.
 
 Refresh the dataset whenever you want newer list data:
 
@@ -69,6 +77,21 @@ The login button needs a Discord application (about two minutes):
 No client secret is used or needed — the browser exchanges the code with PKCE, which Discord
 supports for public clients. Without a client ID the site still works: it falls back to a guest
 profile and shows the setup steps in the sign-in dialog.
+
+## Owner powers
+
+The owner's Discord account can add packs to itself whenever it likes, with no timer and no
+storage cap. Match it by Discord username or numeric user id, comma separated for several people:
+
+```bash
+VITE_OWNER_DISCORD=your_discord_username npm run dev
+```
+
+On GitHub Pages, set it as a repository variable named `OWNER_DISCORD` (Settings → Secrets and
+variables → Actions → Variables). The built-in default is `lilbinladn`.
+
+This is a convenience, not a security boundary: saves live in `localStorage`, so anyone can edit
+their own numbers regardless of what the client allows.
 
 ## Deploy to GitHub Pages
 

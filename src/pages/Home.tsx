@@ -24,6 +24,8 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
     totalCards,
     session,
     playerName,
+    isOwner,
+    grantPacks,
   } = useGame();
   const [pulls, setPulls] = useState<Pull[] | null>(null);
   const [detail, setDetail] = useState<number | null>(null);
@@ -52,7 +54,7 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
           <p className="eyebrow">Packs available</p>
           <p className="hero__count">
             <strong>{packs}</strong>
-            <span>/{MAX_PACKS}</span>
+            <span>/{isOwner ? "∞" : MAX_PACKS}</span>
           </p>
           <p className="hero__hint">
             One pack every 3 minutes, up to {MAX_PACKS} stored. The timer runs on the clock, so
@@ -84,7 +86,11 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
 
         <div className="hero__right">
           <div className={`storage-chip${isFull ? " is-full" : ""}`}>
-            {isFull ? "Pack storage full" : `${MAX_PACKS - packs} slots free`}
+            {isOwner
+              ? "Unlimited storage"
+              : isFull
+                ? "Pack storage full"
+                : `${MAX_PACKS - packs} slots free`}
           </div>
           <p className="hero__next">
             {isFull ? (
@@ -98,7 +104,7 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
           <ul className="hero__list">
             <li>5 cards per pack</li>
             <li>Last card is Rare or better</li>
-            <li>8% chance a card is Holo</li>
+            <li>8% chance a card is Foil</li>
           </ul>
           {session ? (
             <p className="hero__signed">
@@ -112,6 +118,33 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
           )}
         </div>
       </section>
+
+      {isOwner && (
+        <section className="panel owner-panel">
+          <div className="panel__head">
+            <div>
+              <h2>Owner controls</h2>
+              <p className="muted">
+                This account owns the site, so it can add packs whenever it likes — no timer and
+                no storage cap.
+              </p>
+            </div>
+          </div>
+          <div className="owner-panel__actions">
+            {[1, 5, 10].map((amount) => (
+              <button
+                key={amount}
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => grantPacks(amount)}
+              >
+                +{amount} pack{amount === 1 ? "" : "s"}
+              </button>
+            ))}
+            <span className="muted owner-panel__count">{packs} ready</span>
+          </div>
+        </section>
+      )}
 
       <section className="panel">
         <div className="panel__head">
@@ -135,7 +168,7 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
           <div className="stat">
             <strong>{formatPercent(percent(holoCount, TOTAL_LEVELS))}</strong>
             <span>
-              Holo ({formatNumber(holoCount)}/{formatNumber(TOTAL_LEVELS)})
+              Foil ({formatNumber(holoCount)}/{formatNumber(TOTAL_LEVELS)})
             </span>
           </div>
           <div className="stat">

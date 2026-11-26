@@ -1550,3 +1550,20 @@ h3 {
     gap: 10px;
   }
 }
+
+/* Owner-only pack controls on the home page. */
+.owner-panel {
+  border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.owner-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.owner-panel__count {
+  font-size: 12px;
+  margin-left: auto;
+}

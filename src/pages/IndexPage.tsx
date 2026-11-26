@@ -8,6 +8,17 @@ import { useGame } from "../state/GameContext";
 
 const PAGE_STEP = 60;
 
+/**
+ * Index order follows AREDL difficulty: ranked demons first, from #1 (hardest)
+ * downwards, then everything AREDL does not cover by GDDL tier.
+ */
+const INDEX_ORDER = [...LEVELS].sort((a, b) => {
+  if (a.aredl != null && b.aredl != null) return a.aredl - b.aredl;
+  if (a.aredl != null) return -1;
+  if (b.aredl != null) return 1;
+  return b.tier - a.tier;
+});
+
 export function IndexPage() {
   const { save } = useGame();
   const [query, setQuery] = useState("");
@@ -19,7 +30,7 @@ export function IndexPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return LEVELS.filter((level) => {
+    return INDEX_ORDER.filter((level) => {
       if (difficulty !== "all" && level.difficulty !== difficulty) return false;
       if (rarity !== "all" && rarityOf(level.id) !== Number(rarity)) return false;
       if (ownedOnly && !save.owned[String(level.id)]) return false;
@@ -39,8 +50,9 @@ export function IndexPage() {
           <div>
             <h2>Demon index</h2>
             <p className="muted">
-              Every rated demon in Geometry Dash — {formatNumber(LEVELS.length)} levels from GDDL,
-              with AREDL positions for listed Extreme Demons.
+              Every rated demon in Geometry Dash — {formatNumber(LEVELS.length)} levels, ordered by
+              AREDL difficulty: ranked demons first (AREDL #1 hardest), then the rest by GDDL
+              tier.
             </p>
           </div>
         </div>

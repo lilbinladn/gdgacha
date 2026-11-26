@@ -71,7 +71,7 @@ export function Collection({ navigate }: { navigate: (route: Route) => void }) {
             <h2>Your collection</h2>
             <p className="muted">
               {formatNumber(ownedCount)} unique demons · {formatNumber(totalCards)} cards ·{" "}
-              {formatNumber(holoCount)} holo
+              {formatNumber(holoCount)} foil
             </p>
           </div>
           <button type="button" className="link" onClick={() => navigate("index")}>
